@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken")
 const { isAuthenticated } = require("../middleware/route-guard.middleware")
 require("dotenv").config()
 const router = require("express").Router()
-const secret = require("../config/secretGenerator")
+const secret = process.env.JWT_SECRET
 
 //All routes starts with /auth
 
