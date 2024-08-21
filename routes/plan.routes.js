@@ -27,6 +27,60 @@ router.get("/:planId", async (req, res, next) => {
     }
 })
 
+router.get("/price", async (req, res, next) => {
+    const { price } = req.query
+    if (!price) {
+        return res.status(400).json({ message: "El parametro `precio` debe ser provisto" });
+    }
+    try {
+        const data = await Plan.find({ price: Number(price) })
+        if (data.length === 0) {
+            return res.status(404).json({ message: `${price} no encontrado` })
+        }
+        res.status(200).json(data)
+
+    } catch (error) {
+        console.log("Error: ", error)
+        res.status(500).json({ message: "Planes no disponibles por el precio" })
+    }
+})
+
+router.get("/days", async (req, res, next) => {
+    const { days } = req.query
+    if (!days) {
+        return res.status(400).json({ message: "El parametro `días` debe ser provisto" });
+    }
+    try {
+        const data = await Plan.find({ days: Number(days) })
+        if (data.length === 0) {
+            return res.status(404).json({ message: `${days} no encontrado` })
+        }
+        res.status(200).json(data)
+
+    } catch (error) {
+        console.log("Error: ", error)
+        res.status(500).json({ message: "Planes no disponibles por los días" })
+    }
+})
+
+router.get("/name", async (req, res, next) => {
+    const { name } = req.query
+    if (!name) {
+        return res.status(400).json({ message: "El parametro `nombre` debe ser provisto" });
+    }
+    try {
+        const data = await Plan.find({ name: String(name) })
+        if (data.length === 0) {
+            return res.status(404).json({ message: `${name} no encontrado` })
+        }
+        res.status(200).json(data)
+
+    } catch (error) {
+        console.log("Error: ", error)
+        res.status(500).json({ message: "Planes no disponibles por los días" })
+    }
+})
+
 router.post("/", async (req, res, next) => {
     try {
         const postPlan = await Plan.create(req.body);
