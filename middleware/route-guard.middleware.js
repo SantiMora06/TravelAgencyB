@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken")
 const secret = require("../config/secretGenerator")
-const User = require("../models/Users.model")
+const User = require("../models/User.model")
 
 const isAuthenticated = async (req, res, next) => {
 

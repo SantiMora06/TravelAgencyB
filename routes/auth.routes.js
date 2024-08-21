@@ -1,4 +1,4 @@
-const User = require("../models/Users.model")
+const User = require("../models/User.model")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const { isAuthenticated } = require("../middleware/route-guard.middleware")
@@ -19,9 +19,9 @@ router.post("/signup", async (req, res, next) => {
 
     try {
         const newUser = await User.create({ ...req.body, passwordHash })
-        const { username, email, address, phone, role, _id } = newUser;
+        const { username, email, phone, isAdmin, _id } = newUser;
         // Create a new object that doesn't expose the password
-        const user = { username, email, address, phone, role, _id };
+        const user = { username, email, phone, isAdmin, _id };
         res.status(201).json(user)
     } catch (error) {
         if (error.code === 11000) {
@@ -47,7 +47,7 @@ router.post("/login", async (req, res, next) => {
                 const payload = {
                     userId: potentialUser._id,
                     username: potentialUser.username,
-                    role: potentialUser.role,
+                    isAdmin: potentialUser.isAdmin,
                 };
                 const authToken = jwt.sign(
                     payload,
