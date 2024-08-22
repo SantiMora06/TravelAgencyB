@@ -27,15 +27,18 @@ router.get("/:planId", async (req, res, next) => {
     }
 })
 
-router.get("/price", async (req, res, next) => {
-    const { price } = req.query
-    if (!price) {
-        return res.status(400).json({ message: "El parametro `precio` debe ser provisto" });
+router.get("/price/:price", async (req, res, next) => {
+    const { price } = req.params
+
+    const numericPrice = Number(price);
+    if (isNaN(numericPrice)) {
+        return res.status(400).json({ message: "El parámetro `precio` debe ser un número válido" });
     }
+
     try {
-        const data = await Plan.find({ price: Number(price) })
+        const data = await Plan.find({ price: { $lte: numericPrice } })
         if (data.length === 0) {
-            return res.status(404).json({ message: `${price} no encontrado` })
+            return res.status(404).json({ message: `No encontramos planes por el importe de ${price}€ o inferior` })
         }
         res.status(200).json(data)
 
@@ -45,15 +48,17 @@ router.get("/price", async (req, res, next) => {
     }
 })
 
-router.get("/days", async (req, res, next) => {
-    const { days } = req.query
-    if (!days) {
-        return res.status(400).json({ message: "El parametro `días` debe ser provisto" });
+router.get("/days/:days", async (req, res, next) => {
+    const { days } = req.params
+
+    const numericDays = Number(days);
+    if (isNaN(numericDays)) {
+        return res.status(400).json({ message: "El parámetro `days` debe ser un número válido" });
     }
     try {
-        const data = await Plan.find({ days: Number(days) })
+        const data = await Plan.find({ days: { $lte: numericDays } })
         if (data.length === 0) {
-            return res.status(404).json({ message: `${days} no encontrado` })
+            return res.status(404).json({ message: `No se han encontrado planes por ${days} días o menos` })
         }
         res.status(200).json(data)
 
@@ -69,7 +74,7 @@ router.get("/name", async (req, res, next) => {
         return res.status(400).json({ message: "El parametro `nombre` debe ser provisto" });
     }
     try {
-        const data = await Plan.find({ name: String(name) })
+        const data = await Plan.find({ name: { $regex: new RegExp(name, 'i') } })
         if (data.length === 0) {
             return res.status(404).json({ message: `${name} no encontrado` })
         }
@@ -80,6 +85,32 @@ router.get("/name", async (req, res, next) => {
         res.status(500).json({ message: "Planes no disponibles por los días" })
     }
 })
+
+router.get("/filter", async (req, res, next) => {
+    const { days, price } = req.query;
+
+    const query = {};
+
+    if (days) {
+        query.days = { $lte: Number(days) }; // Less than or equal to
+    }
+
+    if (price) {
+        query.price = { $lte: Number(price) }; // Less than or equal to
+    }
+
+    try {
+        const data = await Plan.find(query);
+        if (data.length === 0) {
+            return res.status(404).json({ message: "No plans found for the given criteria" });
+        }
+        res.status(200).json(data);
+    } catch (error) {
+        console.error("Error: ", error);
+        res.status(500).json({ message: "Error retrieving plans" });
+    }
+});
+
 
 router.post("/", async (req, res, next) => {
     try {
