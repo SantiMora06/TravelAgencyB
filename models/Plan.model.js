@@ -29,11 +29,6 @@ const planSchema = new Schema(
       type: Number,
       required: [true, 'Days are required.'],
     },
-    isCruise: {
-      type: Boolean,
-      required: [true, "isCruise is required"],
-      default: false
-    },
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
