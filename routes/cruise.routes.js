@@ -5,7 +5,7 @@ const router = require('express').Router()
 
 router.get('/', async (req, res, next) => {
     try {
-        const getCruises = await Plan.find();
+        const getCruises = await Cruise.find();
         res.status(200).json(getCruises)
     } catch (error) {
         console.log("Error: ", error)
@@ -16,7 +16,7 @@ router.get('/', async (req, res, next) => {
 router.get("/:cruiseId", async (req, res, next) => {
     const { cruiseId } = req.params;
     try {
-        const getSingleCruise = await Plan.findById(cruiseId);
+        const getSingleCruise = await Cruise.findById(cruiseId);
         if (!getSingleCruise) {
             return res.status(404).json({ message: "Crucero no encontrado" })
         }
@@ -36,7 +36,7 @@ router.get("/price/:price", async (req, res, next) => {
     }
 
     try {
-        const data = await Plan.find({ price: { $lte: numericPrice } })
+        const data = await Cruise.find({ price: { $lte: numericPrice } })
         if (data.length === 0) {
             return res.status(404).json({ message: `No encontramos planes por el importe de ${price}€ o inferior` })
         }
@@ -74,7 +74,7 @@ router.get("/name", async (req, res, next) => {
         return res.status(400).json({ message: "El parametro `nombre` debe ser provisto" });
     }
     try {
-        const data = await Plan.find({ name: { $regex: new RegExp(name, 'i') } })
+        const data = await Cruise.find({ name: { $regex: new RegExp(name, 'i') } })
         if (data.length === 0) {
             return res.status(404).json({ message: `${name} no encontrado` })
         }
@@ -100,7 +100,7 @@ router.get("/filter", async (req, res, next) => {
     }
 
     try {
-        const data = await Plan.find(query);
+        const data = await Cruise.find(query);
         if (data.length === 0) {
             return res.status(404).json({ message: "No cruises found for the given criteria" });
         }
@@ -114,22 +114,22 @@ router.get("/filter", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
     try {
-        const postPlan = await Plan.create(req.body);
-        res.status(201).json(postPlan)
+        const postCruise = await Cruise.create(req.body);
+        res.status(201).json(postCruise)
 
     } catch (error) {
         console.log("Error: ", error)
-        res.status(500).json({ message: "Error al postear un plan" })
+        res.status(500).json({ message: "Error al postear un Cruise" })
     }
 })
 
 router.put("/:cruiseId", async (req, res, next) => {
     const { cruiseId } = req.params;
     try {
-        const editCruise = await Plan.findByIdAndUpdate(
+        const editCruise = await Cruise.findByIdAndUpdate(
             cruiseId,
             req.body,
-            { new: true } // Esta opción asegura que se devuelva el plan actualizado
+            { new: true } // Esta opción asegura que se devuelva el Cruise actualizado
         );
         if (!editCruise) {
             return res.status(404).json({ message: "crucero no editado" })
@@ -144,11 +144,11 @@ router.put("/:cruiseId", async (req, res, next) => {
 router.delete("/:cruiseId", async (req, res, next) => {
     const { cruiseId } = req.params;
     try {
-        const deleteCruise = await Plan.findByIdAndDelete(cruiseId)
+        const deleteCruise = await Cruise.findByIdAndDelete(cruiseId)
         if (!deleteCruise) {
             return res.status(404).json({ message: "Crucero no encontrado" });
         }
-        res.status(200).json({ message: "Plan eliminado con exito", cruise: deleteCruise })
+        res.status(200).json({ message: "Cruise eliminado con exito", cruise: deleteCruise })
     } catch (error) {
         console.log("Error: ", error)
         res.status(500).json({ message: "Error al eliminar el crucero" })

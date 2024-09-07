@@ -5,7 +5,7 @@ const router = require('express').Router()
 
 router.get('/', async (req, res, next) => {
     try {
-        const getIslands = await Plan.find();
+        const getIslands = await Island.find();
         res.status(200).json(getIslands)
     } catch (error) {
         console.log("Error: ", error)
@@ -16,7 +16,7 @@ router.get('/', async (req, res, next) => {
 router.get("/:islandId", async (req, res, next) => {
     const { islandId } = req.params;
     try {
-        const getSingleIsland = await Plan.findById(islandId);
+        const getSingleIsland = await Island.findById(islandId);
         if (!getSingleIsland) {
             return res.status(404).json({ message: "Isla no encontrada" })
         }
@@ -36,7 +36,7 @@ router.get("/price/:price", async (req, res, next) => {
     }
 
     try {
-        const data = await Plan.find({ price: { $lte: numericPrice } })
+        const data = await Island.find({ price: { $lte: numericPrice } })
         if (data.length === 0) {
             return res.status(404).json({ message: `No encontramos islas por el importe de ${price}€ o inferior` })
         }
@@ -56,7 +56,7 @@ router.get("/days/:days", async (req, res, next) => {
         return res.status(400).json({ message: "El parámetro `days` debe ser un número válido" });
     }
     try {
-        const data = await Plan.find({ days: { $lte: numericDays } })
+        const data = await Island.find({ days: { $lte: numericDays } })
         if (data.length === 0) {
             return res.status(404).json({ message: `No se han encontrado islas por ${days} días o menos` })
         }
@@ -74,7 +74,7 @@ router.get("/name", async (req, res, next) => {
         return res.status(400).json({ message: "El parametro `nombre` debe ser provisto" });
     }
     try {
-        const data = await Plan.find({ name: { $regex: new RegExp(name, 'i') } })
+        const data = await Island.find({ name: { $regex: new RegExp(name, 'i') } })
         if (data.length === 0) {
             return res.status(404).json({ message: `${name} no encontrado` })
         }
@@ -100,7 +100,7 @@ router.get("/filter", async (req, res, next) => {
     }
 
     try {
-        const data = await Plan.find(query);
+        const data = await Island.find(query);
         if (data.length === 0) {
             return res.status(404).json({ message: "No islands found for the given criteria" });
         }
@@ -114,7 +114,7 @@ router.get("/filter", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
     try {
-        const postPlan = await Plan.create(req.body);
+        const postPlan = await Island.create(req.body);
         res.status(201).json(postPlan)
 
     } catch (error) {
@@ -126,7 +126,7 @@ router.post("/", async (req, res, next) => {
 router.put("/:islandId", async (req, res, next) => {
     const { islandId } = req.params;
     try {
-        const editIsland = await Plan.findByIdAndUpdate(
+        const editIsland = await Island.findByIdAndUpdate(
             islandId,
             req.body,
             { new: true } // Esta opción asegura que se devuelva el plan actualizado
@@ -144,7 +144,7 @@ router.put("/:islandId", async (req, res, next) => {
 router.delete("/:islandId", async (req, res, next) => {
     const { islandId } = req.params;
     try {
-        const deleteIsland = await Plan.findByIdAndDelete(islandId)
+        const deleteIsland = await Island.findByIdAndDelete(islandId)
         if (!deleteIsland) {
             return res.status(404).json({ message: "Isla no encontrada" });
         }
